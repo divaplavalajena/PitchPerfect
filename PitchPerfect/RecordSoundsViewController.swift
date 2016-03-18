@@ -37,9 +37,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func recordAudio(sender: AnyObject) {
         print("record button pressed")
-        recordingLabel.text = "Recording in progress"
-        stopRecordingButton.hidden = false
-        recordButton.enabled = false
+        changeButtons(buttonText: "Recording in progress", hidden: false, enabled: false)
         
         //Inside func recordAudio(sender: UIButton)
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
@@ -63,9 +61,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func stopRecording(sender: AnyObject) {
         print("stop recording pressed")
-        recordingLabel.text = "Tap Mic to Record"
-        recordButton.enabled = true
-        stopRecordingButton.hidden = true
+        changeButtons(buttonText: "Tap Mic to Record", hidden: true, enabled: true)
         
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
@@ -75,16 +71,13 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         if (flag) {
             //Save the recorded audio
-                //recordedAudio = RecordedAudio()
             recordedAudio = recorder.url
-                //recordedAudio.title = recorder.url.lastPathComponent
             
             //Move to the next scene aka perform segue
-            self.performSegueWithIdentifier("stopRecording", sender: recordedAudio)
+            performSegueWithIdentifier("stopRecording", sender: recordedAudio)
         } else {
             print("Recording not successfull")
-            recordButton.enabled = true
-            stopRecordingButton.hidden = true
+            changeButtons(hidden: true, enabled: true)
         }
     }
     
@@ -93,6 +86,24 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
             let playSoundsVC = segue.destinationViewController as! PlaySoundsViewController
             let recordedAudioURL = sender as! NSURL
             playSoundsVC.recordedAudioURL  = recordedAudioURL
+        }
+    }
+    
+    func changeButtons(buttonText buttonText: String? = nil, hidden: Bool, enabled: Bool) {
+        if let buttonText = buttonText {
+            recordingLabel.text = buttonText
+        }
+        
+        if hidden == true {
+            stopRecordingButton.hidden = hidden
+        } else if hidden == false {
+            stopRecordingButton.hidden = hidden
+        }
+        
+        if enabled == true {
+            recordButton.enabled = enabled
+        } else if enabled == false {
+                recordButton.enabled = enabled
         }
     }
     
