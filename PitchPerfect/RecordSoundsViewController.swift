@@ -25,9 +25,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         //print("view will appear called")
-        stopRecordingButton.hidden = true
+        stopRecordingButton.isHidden = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,19 +40,19 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         changeButtons(buttonText: "Recording in progress", hidden: false, enabled: false)
         
         //Inside func recordAudio(sender: UIButton)
-        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
         
         let recordingName = "recordedVoice.wav"
         let pathArray = [dirPath, recordingName]
-        let filePath = NSURL.fileURLWithPathComponents(pathArray)
+        let filePath = NSURL.fileURL(withPathComponents: pathArray)
         print(filePath)
         
         let session = AVAudioSession.sharedInstance()
-        try! session.setCategory(AVAudioSessionCategoryPlayAndRecord, withOptions: AVAudioSessionCategoryOptions.DefaultToSpeaker)
+        try! session.setCategory(AVAudioSessionCategoryPlayAndRecord, with: AVAudioSessionCategoryOptions.defaultToSpeaker)
                 
-        try! audioRecorder = AVAudioRecorder(URL: filePath!, settings: [:])
+        try! audioRecorder = AVAudioRecorder(url: filePath!, settings: [:])
         audioRecorder.delegate = self
-        audioRecorder.meteringEnabled = true
+        audioRecorder.isMeteringEnabled = true
         audioRecorder.prepareToRecord()
         audioRecorder.record()
 
@@ -68,42 +68,43 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         try! audioSession.setActive(false)
     }
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if (flag) {
             //Save the recorded audio
-            recordedAudio = recorder.url
+            recordedAudio = recorder.url as NSURL!
             
             //Move to the next scene aka perform segue
-            performSegueWithIdentifier("stopRecording", sender: recordedAudio)
+            performSegue(withIdentifier: "stopRecording", sender: recordedAudio)
         } else {
             print("Recording not successfull")
             changeButtons(hidden: true, enabled: true)
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "stopRecording") {
-            let playSoundsVC = segue.destinationViewController as! PlaySoundsViewController
+            let playSoundsVC = segue.destination as! PlaySoundsViewController
             let recordedAudioURL = sender as! NSURL
+            print("Recorded Audio URL: \(recordedAudioURL)")
             playSoundsVC.recordedAudioURL  = recordedAudioURL
         }
     }
     
-    func changeButtons(buttonText buttonText: String? = nil, hidden: Bool, enabled: Bool) {
+    func changeButtons(buttonText: String? = nil, hidden: Bool, enabled: Bool) {
         if let buttonText = buttonText {
             recordingLabel.text = buttonText
         }
         
         if hidden == true {
-            stopRecordingButton.hidden = hidden
+            stopRecordingButton.isHidden = hidden
         } else if hidden == false {
-            stopRecordingButton.hidden = hidden
+            stopRecordingButton.isHidden = hidden
         }
         
         if enabled == true {
-            recordButton.enabled = enabled
+            recordButton.isEnabled = enabled
         } else if enabled == false {
-                recordButton.enabled = enabled
+                recordButton.isEnabled = enabled
         }
     }
     

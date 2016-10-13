@@ -23,7 +23,7 @@ class PlaySoundsViewController: UIViewController {
     var audioFile:AVAudioFile!
     var audioEngine: AVAudioEngine!
     var audioPlayerNode: AVAudioPlayerNode!
-    var stopTimer: NSTimer!
+    var stopTimer: Timer!
     
     enum ButtonType: Int { case Slow = 0, Fast, Chipmunk, Vader, Echo, Reverb }
     
@@ -44,7 +44,7 @@ class PlaySoundsViewController: UIViewController {
             playSound(reverb: true)
         }
         
-        configureUI(.Playing)
+        configureUI(playState: .Playing)
     }
     
     @IBAction func stopButtonPressed(sender: AnyObject) {
@@ -62,8 +62,8 @@ class PlaySoundsViewController: UIViewController {
 
     }
     
-    override func viewWillAppear(animated: Bool) {
-        configureUI(.NotPlaying)
+    override func viewWillAppear(_ animated: Bool) {
+        configureUI(playState: .NotPlaying)
     }
 
     
